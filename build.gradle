@@ -1,0 +1,79 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.2'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.ascendcargo'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Core Spring Boot dependencies
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // JPA for database operations
+	implementation 'org.springframework.boot:spring-boot-starter-web'         // Web application support
+	implementation 'org.springframework.boot:spring-boot-starter:3.4.0'       // Core Spring Boot starter
+
+	// API Documentation
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.7.0'  // OpenAPI/Swagger UI
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.15'                                         // Swagger annotations
+
+	// Security and Validation
+	//implementation 'javax.servlet:javax.servlet-api:4.0.1'                   // Servlet API
+	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.4.0'  // Security features
+	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.0' // Validation support
+	//implementation 'javax.validation:validation-api:2.0.1.Final'             // Java validation API
+	//implementation 'org.hibernate.validator:hibernate-validator:6.0.13.Final' // Hibernate validator
+	
+	// XML binding and processing
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'                          // JAXB API
+	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'                  // JAXB Runtime
+	implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'  // Updated JAXB Runtime
+
+	// Monitoring and JWT
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'    // Application monitoring
+	//implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.12.6' // JWT core
+	//runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.6'    // JWT implementation
+	//runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.6'  // JWT Jackson support
+
+	// Email and OAuth2
+	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.3.5'  // Email support
+	//implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '6.4.1'  // OAuth2 client
+
+	// Database auditing
+	implementation group: 'org.hibernate', name: 'hibernate-envers', version: '6.6.4.Final'  // Hibernate entity versioning
+
+	// File handling
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'          // Excel file handling
+	implementation 'org.apache.commons:commons-csv:1.10.0'    // CSV file handling
+	implementation 'com.h2database:h2'                        // H2 in-memory database
+
+	// Development tools
+	developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '3.4.1'  // Developer tools
+
+	// Lombok and Database
+	compileOnly 'org.projectlombok:lombok'                   // Lombok for boilerplate reduction
+	runtimeOnly 'com.mysql:mysql-connector-j'                // MySQL database connector
+	annotationProcessor 'org.projectlombok:lombok'           // Lombok annotation processor
+
+	// Testing
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'  // Testing framework
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'            // JUnit test launcher
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs << "-Xlint:deprecation"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
