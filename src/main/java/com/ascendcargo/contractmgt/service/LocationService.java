@@ -32,6 +32,9 @@ public class LocationService {
                     throw new IllegalArgumentException("Customs cannot be destination");
                 }
                 break;
+            case VIA_POINT:
+                // No specific validation for via points
+                break;
         }
     }
 
