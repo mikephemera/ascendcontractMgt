@@ -1,9 +1,11 @@
 package com.ascendcargo.contractmgt.repository;
 
-import com.ascendcargo.contractmgt.model.Location;
-import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.ascendcargo.contractmgt.model.Location;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    List<Location> findByLocationType_TypeName(String typeName);
+    Optional<Location> findByCode(String code);
+
+    boolean existsByCode(String code);
 }

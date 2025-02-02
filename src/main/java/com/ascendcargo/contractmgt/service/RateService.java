@@ -1,5 +1,6 @@
 package com.ascendcargo.contractmgt.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,46 +10,44 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class RateService {
-
     private final RateRepository rateRepository;
 
     public Rate createRate(Rate rate) {
-        validateRateDates(rate);
+        validateRatePeriod(rate);
         return rateRepository.save(rate);
     }
 
-    private void validateRateDates(Rate rate) {
-        if (rate.getEndDate() != null && rate.getStartDate().isAfter(rate.getEndDate())) {
-            throw new IllegalArgumentException("End date cannot be before start date");
+    public BigDecimal calculateCharge(Rate rate, BigDecimal weight) {
+        switch (rate.getBasisType()) {
+            case FLAT:
+                return rate.getCost().max(rate.getMinCharge()).min(rate.getMaxCharge());
+            case PER_KG:
+                return calculateWeightBased(rate, weight);
+            default:
+                throw new UnsupportedOperationException("Calculation method not implemented");
         }
     }
 
-    public Rate updateRate(Long id, Rate rateDetails) {
-        Rate existing = rateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Rate not found"));
-        
-        if (rateDetails.getContractedOrKniff() != null) {
-            existing.setContractedOrKniff(rateDetails.getContractedOrKniff());
+    private BigDecimal calculateWeightBased(Rate rate, BigDecimal weight) {
+        BigDecimal base = rate.getCost().multiply(weight);
+        return base.max(rate.getMinCharge()).min(rate.getMaxCharge());
+    }
+
+    private void validateRatePeriod(Rate rate) {
+        if (rate.getEffectiveDate().isAfter(rate.getExpirationDate())) {
+            throw new IllegalArgumentException("Rate period is invalid");
         }
-        // 更新其他字段...
-        return rateRepository.save(existing);
     }
 
-    public List<Rate> getAllRates() {
-        return rateRepository.findAll();
+    public List<Rate> getRatesByRouteId(Long routeId) {
+        return rateRepository.findByRouteId(routeId);
     }
 
-    public Rate getRateById(Long id) {
-        return rateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Rate not found with id: " + id));
-    }
-
-    public void deleteRate(Long id) {
-        Rate rate = rateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Rate not found with id: " + id));
-        rateRepository.delete(rate);
+    public Rate getRateById(Long rateId) {
+        return rateRepository.findById(rateId)
+            .orElseThrow(() -> new EntityNotFoundException("Rate not found with id: " + rateId));
     }
 }

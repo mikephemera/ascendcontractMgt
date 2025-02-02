@@ -1,36 +1,45 @@
 package com.ascendcargo.contractmgt.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import java.math.BigDecimal;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Equipment")
+@Table(name = "equipment")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Equipment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uniqueID;
+    private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String type;
 
-    @Column(columnDefinition = "boolean default true")
-    private Boolean availability;
+    @Column(name = "iso_code")
+    private String isoCode;
 
-    @ManyToMany(mappedBy = "equipments")
-    private List<Route> routes = new ArrayList<>();
+    @Column(precision = 10, scale = 2)
+    private BigDecimal capacity;
+
+    @Enumerated(EnumType.STRING)
+    private EquipmentUnit unit;
+
+    public enum EquipmentUnit {
+        TEU, // 对应数据库枚举值 TEU
+        FEU, // 对应数据库枚举值 FEU
+        TON, // 对应数据库枚举值 ton
+        CBM // 对应数据库枚举值 cbm
+    }
 }

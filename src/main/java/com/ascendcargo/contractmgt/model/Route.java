@@ -1,64 +1,68 @@
 package com.ascendcargo.contractmgt.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Routes")
+@Table(name = "routes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uniqueID;
+    private Long id;
 
-    @Column(nullable = false)
-    private String mode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lane_id", nullable = false)
+    private Lane lane;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal capacity;
+    @Enumerated(EnumType.STRING)
+    private TransportMode mode;
 
-    @Column(precision = 10, scale = 2)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "carrier_org_id", nullable = false)
+    private Organization carrier;
+
+    @Column(name = "equipment_type")
+    private String equipmentType;
+
     private BigDecimal distance;
 
-    @Column(columnDefinition = "varchar(20) default 'Miles'")
-    private String unit;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "distance_unit")
+    private DistanceUnit distanceUnit;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    @Column(name = "transit_time")
+    private Integer transitTime; // hours
 
-    @ManyToMany
-    @JoinTable(
-        name = "RouteEquipment",
-        joinColumns = @JoinColumn(name = "RouteID"),
-        inverseJoinColumns = @JoinColumn(name = "EquipmentID")
-    )
-    private List<Equipment> equipments = new ArrayList<>();
+    private Integer capacity;
 
-    public Object getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
+    private Set<Rate> rates = new HashSet<>();
+
+    public enum TransportMode {
+        SEA, RAIL, TRUCK, AIR
     }
 
-    public void setName(Object name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setName'");
+    public enum DistanceUnit {
+        KM, MILE
     }
 }

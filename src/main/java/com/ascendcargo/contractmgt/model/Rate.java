@@ -2,58 +2,66 @@ package com.ascendcargo.contractmgt.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Rates")
+@Table(name = "rates")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Rate {
-    public enum ContractType {
-        Contracted, Kniff
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uniqueID;
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_id", nullable = false)
+    private Route route;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ContractType contractedOrKniff;
-
-    @Column(precision = 15, scale = 2)
-    private BigDecimal cost;
-
-    @Column(precision = 15, scale = 2)
-    private BigDecimal revenue;
+    @Column(name = "basis_type")
+    private RateBasisType basisType;
 
     @Column(length = 3)
-    private String currency = "USD";
+    private String currency;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    @Column(precision = 12, scale = 4)
+    private BigDecimal cost;
 
-    private String rateBasis;
+    @Column(precision = 12, scale = 4)
+    private BigDecimal revenue;
 
-    @ManyToMany(mappedBy = "rates")
-    private List<Lane> lanes = new ArrayList<>();
+    @Column(name = "min_charge", precision = 12, scale = 2)
+    private BigDecimal minCharge;
 
-    @Enumerated(EnumType.STRING)
-    private ContractType contractType;
+    @Column(name = "max_charge", precision = 12, scale = 2)
+    private BigDecimal maxCharge;
+
+    @Column(name = "effective_date")
+    private LocalDate effectiveDate;
+
+    @Column(name = "expiration_date")
+    private LocalDate expirationDate;
+
+    public enum RateBasisType {
+        FLAT, PERCENTAGE, PER_KG, PER_LB, PER_CU_FT
+    }
+
+    public boolean isEffectiveOn(LocalDate date) {
+        return (date.isEqual(effectiveDate) || date.isAfter(effectiveDate)) 
+            && (expirationDate == null || date.isBefore(expirationDate) || date.isEqual(expirationDate));
+    }
 }

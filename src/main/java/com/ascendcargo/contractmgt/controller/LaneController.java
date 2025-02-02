@@ -1,19 +1,18 @@
 package com.ascendcargo.contractmgt.controller;
 
-import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ascendcargo.contractmgt.model.Lane;
-import com.ascendcargo.contractmgt.service.LaneDTO;
+import com.ascendcargo.contractmgt.model.Route;
 import com.ascendcargo.contractmgt.service.LaneService;
+import com.ascendcargo.contractmgt.service.RouteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -21,52 +20,26 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/lanes")
 @RequiredArgsConstructor
 public class LaneController {
-
     private final LaneService laneService;
-
-    @GetMapping
-    public ResponseEntity<List<Lane>> getAllLanes() {
-        return ResponseEntity.ok(laneService.getAllLanes());
-    }
+    private final RouteService routeService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Lane> getLaneById(@PathVariable Long id) {
+    public ResponseEntity<Lane> getLane(@PathVariable Long id) {
         return ResponseEntity.ok(laneService.getLaneById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Lane> createLane(@Valid @RequestBody LaneDTO laneDTO) {
-        Lane created = laneService.createLane(laneDTO);
-        return ResponseEntity.created(URI.create("/api/lanes/" + created.getUniqueID()))
-                .body(created);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Lane> updateLane(
-            @PathVariable Long id,
-            @Valid @RequestBody LaneDTO laneDTO) {
-        return ResponseEntity.ok(laneService.updateLane(id, laneDTO));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLane(@PathVariable Long id) {
-        laneService.deleteLane(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{laneId}/rates/{rateId}")
-    public ResponseEntity<Void> addRateToLane(
+    @PostMapping("/{laneId}/routes")
+    public ResponseEntity<Route> createRoute(
             @PathVariable Long laneId,
-            @PathVariable Long rateId) {
-        laneService.addRateToLane(laneId, rateId);
-        return ResponseEntity.noContent().build();
+            @Valid @RequestBody Route route
+    ) {
+        Lane lane = laneService.getLaneById(laneId);
+        route.setLane(lane);
+        return ResponseEntity.status(HttpStatus.CREATED).body(routeService.createRoute(route));
     }
 
-    @DeleteMapping("/{laneId}/rates/{rateId}")
-    public ResponseEntity<Void> removeRateFromLane(
-            @PathVariable Long laneId,
-            @PathVariable Long rateId) {
-        laneService.removeRateFromLane(laneId, rateId);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/{laneId}/routes")
+    public ResponseEntity<List<Route>> getLaneRoutes(@PathVariable Long laneId) {
+        return ResponseEntity.ok(routeService.getRoutesByLaneId(laneId));
     }
 }
