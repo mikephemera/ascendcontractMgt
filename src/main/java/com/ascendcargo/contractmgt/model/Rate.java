@@ -51,7 +51,25 @@ public class Rate {
     }
 
     public boolean isEffectiveOn(LocalDate date) {
-        return (date.isEqual(effectiveDate) || date.isAfter(effectiveDate)) 
-            && (expirationDate == null || date.isBefore(expirationDate) || date.isEqual(expirationDate));
+        return (date.isEqual(effectiveDate) || date.isAfter(effectiveDate))
+                && (expirationDate == null || date.isBefore(expirationDate)
+                        || date.isEqual(expirationDate));
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rate_type", nullable = false)
+    private RateType rateType;
+
+    @Column(precision = 5, scale = 2)
+    private BigDecimal percentage;
+
+    @Column(name = "fixed_amount", precision = 12, scale = 2)
+    private BigDecimal fixedAmount;
+
+    @Column(name = "daily_rate", precision = 12, scale = 2)
+    private BigDecimal dailyRate;
+
+    public enum RateType {
+        BASE, FUEL_SURCHARGE, DETENTION, DEMURRAGE
     }
 }
