@@ -43,10 +43,8 @@ public class Organization {
     private Long parentOrgID;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "org_location",
-            joinColumns = @JoinColumn(name = "org_id"),
+    @JoinTable(name = "org_location", joinColumns = @JoinColumn(name = "org_id"),
             inverseJoinColumns = @JoinColumn(name = "location_id"))
-    private Location Location; // = new HashSet<>();
+    private Location location;
 
 }

@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class RateService {
+    private final ContractAccessorialRepository accessorialRepo;
     private final RateRepository rateRepository;
 
     public Rate createRate(Rate rate) {
@@ -56,7 +57,7 @@ public class RateService {
                 () -> new EntityNotFoundException("Rate not found with id: " + rateId));
     }
 
-    private final ContractAccessorialRepository accessorialRepo;
+
 
     public TotalCharge calculateTotalCharge(Rate rate, BigDecimal weight,
             Map<String, Object> context) {
