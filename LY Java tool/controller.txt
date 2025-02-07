@@ -1,0 +1,218 @@
+// ContractController.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestController
+@RequestMapping("/api/contracts")
+@RequiredArgsConstructor
+public class ContractController {
+    private final ContractService contractService;
+    private final LaneService laneService;
+
+    @PostMapping
+    public ResponseEntity<Contract> createContract(@Valid @RequestBody Contract contract) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(contractService.createContract(contract));
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Contract> activateContract(@PathVariable Long id) {
+        return ResponseEntity.ok(contractService.activateContract(id));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Contract> getContract(@PathVariable Long id) {
+        return ResponseEntity.ok(contractService.getContract(id));
+    }
+
+    @GetMapping("/ref/{contractRef}")
+    public ResponseEntity<Contract> getByReference(@PathVariable String contractRef) {
+        return ResponseEntity.ok(contractService.findByContractReference(contractRef));
+    }
+
+    @PostMapping("/{contractId}/lanes")
+    public ResponseEntity<Lane> createLane(
+            @PathVariable Long contractId,
+            @Valid @RequestBody Lane lane
+    ) {
+        Contract contract = contractService.getContract(contractId);
+        lane.setContract(contract);
+        return ResponseEntity.status(HttpStatus.CREATED).body(laneService.createLane(lane));
+    }
+
+    @GetMapping("/{contractId}/lanes")
+    public ResponseEntity<List<Lane>> getContractLanes(@PathVariable Long contractId) {
+        return ResponseEntity.ok(laneService.getLanesByContractId(contractId));
+    }
+}
+// FILE_END 
+
+// GlobalExceptionHandler.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleConflict(IllegalStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+}
+// FILE_END 
+
+// LaneController.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestController
+@RequestMapping("/api/lanes")
+@RequiredArgsConstructor
+public class LaneController {
+    private final LaneService laneService;
+    private final RouteService routeService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Lane> getLane(@PathVariable Long id) {
+        return ResponseEntity.ok(laneService.getLaneById(id));
+    }
+
+    @PostMapping("/{laneId}/routes")
+    public ResponseEntity<Route> createRoute(
+            @PathVariable Long laneId,
+            @Valid @RequestBody Route route
+    ) {
+        Lane lane = laneService.getLaneById(laneId);
+        route.setLane(lane);
+        return ResponseEntity.status(HttpStatus.CREATED).body(routeService.createRoute(route));
+    }
+
+    @GetMapping("/{laneId}/routes")
+    public ResponseEntity<List<Route>> getLaneRoutes(@PathVariable Long laneId) {
+        return ResponseEntity.ok(routeService.getRoutesByLaneId(laneId));
+    }
+}
+// FILE_END 
+
+// LocationController.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestController
+@RequestMapping("/api/locations")
+@RequiredArgsConstructor
+public class LocationController {
+    private final LocationService locationService;
+
+    @PostMapping
+    public ResponseEntity<Location> createLocation(@Valid @RequestBody Location location) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(locationService.createLocation(location));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Location> getLocation(@PathVariable Long id) {
+        return ResponseEntity.ok(locationService.getLocationById(id));
+    }
+
+    @GetMapping("/code/{code}")
+    public ResponseEntity<Location> getByCode(@PathVariable String code) {
+        return ResponseEntity.ok(locationService.getLocationByCode(code));
+    }
+}
+// FILE_END 
+
+// OrganizationController.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestController
+@RequestMapping("/api/organizations")
+@RequiredArgsConstructor
+public class OrganizationController {
+    private final OrganizationService organizationService;
+
+    @PostMapping
+    public ResponseEntity<Organization> createOrganization(@Valid @RequestBody Organization organization) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(organizationService.createOrganization(organization));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Organization> getOrganization(@PathVariable Long id) {
+        return ResponseEntity.ok(organizationService.getOrganization(id));
+    }
+
+    @PutMapping("/{id}/legal-name")
+    public ResponseEntity<Organization> updateLegalName(
+            @PathVariable Long id,
+            @RequestParam String newLegalName
+    ) {
+        return ResponseEntity.ok(organizationService.updateLegalName(id, newLegalName));
+    }
+}
+// FILE_END 
+
+// RateController.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestController
+@RequestMapping("/api/rates")
+@RequiredArgsConstructor
+public class RateController {
+    private final RateService rateService;
+
+    @PostMapping("/{rateId}/calculate")
+    public ResponseEntity<BigDecimal> calculateCharge(
+            @PathVariable Long rateId,
+            @RequestParam BigDecimal weight
+    ) {
+        return ResponseEntity.ok(rateService.calculateCharge(
+            rateService.getRateById(rateId), 
+            weight
+        ));
+    }
+}
+// FILE_END 
+
+// RouteController.java
+package com.ascendcargo.contractmgt.controller;
+
+@RestController
+@RequestMapping("/api/routes")
+@RequiredArgsConstructor
+public class RouteController {
+    private final RouteService routeService;
+    private final RateService rateService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Route> getRoute(@PathVariable Long id) {
+        return ResponseEntity.ok(routeService.getRouteById(id));
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Route>> findAvailableRoutes(
+            @RequestParam Long laneId,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate shipmentDate
+    ) {
+        return ResponseEntity.ok(routeService.findAvailableRoutes(laneId, shipmentDate));
+    }
+
+    @PostMapping("/{routeId}/rates")
+    public ResponseEntity<Rate> createRate(
+            @PathVariable Long routeId,
+            @Valid @RequestBody Rate rate
+    ) {
+        Route route = routeService.getRouteById(routeId);
+        rate.setRoute(route);
+        return ResponseEntity.status(HttpStatus.CREATED).body(rateService.createRate(rate));
+    }
+
+    @GetMapping("/{routeId}/rates")
+    public ResponseEntity<List<Rate>> getRouteRates(@PathVariable Long routeId) {
+        return ResponseEntity.ok(rateService.getRatesByRouteId(routeId));
+    }
+}
+// FILE_END 

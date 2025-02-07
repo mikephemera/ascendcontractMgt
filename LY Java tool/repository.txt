@@ -1,0 +1,94 @@
+// ContractAccessorialRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface ContractAccessorialRepository extends JpaRepository<ContractAccessorial, Long> {
+    List<ContractAccessorial> findByContract_IdAndType(Long contractId, ContractAccessorial.Type type);
+}
+// FILE_END 
+
+// ContractRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface ContractRepository extends JpaRepository<Contract, Long> {
+    Optional<Contract> findByContractReference(String contractReference);
+    List<Contract> findByStatus(Contract.ContractStatus status);
+    boolean existsByContractReference(String ref);
+}
+// FILE_END 
+
+// DocumentRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface DocumentRepository extends JpaRepository<Document, Long> {
+    List<Document> findByContract_IdOrderByCreatedAtDesc(Long contractId);
+    Optional<Document> findByS3Key(String s3Key);
+    List<Document> findByDocTypeAndContract_Status(String docType, Contract.ContractStatus status);
+    List<Document> findByContract_Id(Long contractId);
+    List<Document> findByContract_IdAndDocType(Long contractId, String docType);
+}
+// FILE_END 
+
+// EquipmentRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
+    Optional<Equipment> findByType(String type);
+    Optional<Equipment> findByIsoCode(String isoCode);
+}
+// FILE_END 
+
+// LaneLocationRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface LaneLocationRepository extends JpaRepository<LaneLocation, LaneLocationId> {
+    @Query("SELECT ll FROM LaneLocation ll WHERE ll.id.laneId = :laneId AND ll.id.type = :type ORDER BY ll.sequence")
+    List<LaneLocation> findByLaneIdAndType(@Param("laneId") Long laneId, @Param("type") LaneLocation.PointType type);
+}
+// FILE_END 
+
+// LaneRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface LaneRepository extends JpaRepository<Lane, Long> {
+    List<Lane> findByContract_Id(Long contractId);
+
+    List<Lane> findByContractId(Long contractId);
+}
+// FILE_END 
+
+// LocationRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface LocationRepository extends JpaRepository<Location, Long> {
+    Optional<Location> findByCode(String code);
+
+    boolean existsByCode(String code);
+}
+// FILE_END 
+
+// OrganizationRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+
+    boolean existsByTaxId(String taxId);
+}
+// FILE_END 
+
+// RateRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface RateRepository extends JpaRepository<Rate, Long> {
+    List<Rate> findByRoute_Id(Long routeId);
+
+    List<Rate> findByRouteId(Long routeId);
+}
+// FILE_END 
+
+// RouteRepository.java
+package com.ascendcargo.contractmgt.repository;
+
+public interface RouteRepository extends JpaRepository<Route, Long> {
+    List<Route> findByLane_Id(Long laneId);
+}
+// FILE_END 
