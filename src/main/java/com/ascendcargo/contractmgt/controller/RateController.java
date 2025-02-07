@@ -9,17 +9,14 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/rates")
 @RequiredArgsConstructor
+
 public class RateController {
     private final RateService rateService;
 
-    @PostMapping("/{rateId}/calculate")
-    public ResponseEntity<BigDecimal> calculateCharge(
-            @PathVariable Long rateId,
-            @RequestParam BigDecimal weight
-    ) {
-        return ResponseEntity.ok(rateService.calculateCharge(
-            rateService.getRateById(rateId), 
-            weight
-        ));
+    @GetMapping("/{rateId}/calculate")
+    public ResponseEntity<BigDecimal> calculateCharge(@PathVariable Long rateId,
+            @RequestParam BigDecimal weight) {
+        return ResponseEntity
+                .ok(rateService.calculateCharge(rateService.getRateById(rateId), weight));
     }
 }

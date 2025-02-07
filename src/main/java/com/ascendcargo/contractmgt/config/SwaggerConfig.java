@@ -12,9 +12,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Ascend Cargo Systems - API")
-                        .version("1.0.0")
-                        .description("This interactive API documentation provides detailed information about our endpoints, their functionality, and how to integrate seamlessly with our systems."));
+                .info(new Info().title("Ascend Cargo Systems - API").version("1.0.0").description(
+                        "This interactive API documentation provides detailed information about our endpoints, their functionality, and how to integrate seamlessly with our systems."));
     }
 }

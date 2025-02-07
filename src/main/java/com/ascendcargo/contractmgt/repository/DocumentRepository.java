@@ -9,7 +9,7 @@ import com.ascendcargo.contractmgt.model.Document;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByContract_IdOrderByCreatedAtDesc(Long contractId);
     Optional<Document> findByS3Key(String s3Key);
-    List<Document> findByDocTypeAndContract_Status(String docType, Contract.ContractStatus status);
+    List<Document> findByDocTypeAndContract_Status(Document.DocumentType docType, Contract.ContractStatus status);
     List<Document> findByContract_Id(Long contractId);
     List<Document> findByContract_IdAndDocType(Long contractId, String docType);
 }
