@@ -31,7 +31,7 @@ dependencies {
 	//implementation 'javax.servlet:javax.servlet-api:4.0.1'                   // Servlet API
 	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.4.0'  // Security features
 	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.0' // Validation support
-	//implementation 'javax.validation:validation-api:2.0.1.Final'             // Java validation API
+	implementation 'javax.validation:validation-api:2.0.1.Final'             // Java validation API
 	//implementation 'org.hibernate.validator:hibernate-validator:6.0.13.Final' // Hibernate validator
 	
 	// XML binding and processing

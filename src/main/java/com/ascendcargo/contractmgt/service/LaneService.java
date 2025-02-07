@@ -12,21 +12,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LaneService {
     private final LaneRepository laneRepository;
-    private final LocationService locationService;
     private final RouteService routeService;
 
     public Lane createLane(Lane lane) {
         validateFacilityTypes(lane);
         Lane savedLane = laneRepository.save(lane);
 
-        // 处理地理关联
-        if (lane.getLaneLocations() != null) {
-            lane.getLaneLocations().forEach(ll -> {
-                locationService.validateLocationType(ll.getLocation(), ll.getType());
-                ll.getId().setLaneId(savedLane.getId());
-                laneRepository.save(savedLane);
-            });
-        }
 
         // 处理运输路线
         if (lane.getRoutes() != null) {

@@ -1,43 +1,50 @@
 package com.ascendcargo.contractmgt.model;
 
-import org.springframework.data.geo.Point;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "locations")
 @Data
-@NoArgsConstructor
+@Entity
 @AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "location")
 public class Location {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "location_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "org_id")
-    private Organization organization;
+    @Column(name = "location_name")
+    private String locationName;
 
-    @Enumerated(EnumType.STRING)
-    private LocationType type;
+    @Column(name = "address_line1", length = 255)
+    private String addressLine1;
 
-    private String code;
-    private String name;
-    private String address;
+    @Column(name = "address_line2", length = 255)
+    private String addressLine2;
+
+    @Column(name = "city", length = 255)
     private String city;
+
+    @Column(name = "state", length = 255)
     private String state;
 
-    @Column(length = 2)
+    @Column(name = "zip_code", length = 20)
+    private String zipCode;
+
+    @Column(name = "country", length = 255)
     private String country;
 
-    @Column(columnDefinition = "POINT SRID 4326")
-    //TO DO
-    //@Type(value = org.hibernate.spatial.GeometryType.class)
-    private Point coordinates;
+    @Column(name = "latitude")
+    private Double latitude;
 
-    public enum LocationType {
-        PORT, TERMINAL, WAREHOUSE, CUSTOMS
-    }
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "is_headquarters", columnDefinition = "boolean default false")
+    private Boolean isHeadquarters;
+
 }

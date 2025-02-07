@@ -18,7 +18,7 @@ public class RouteService {
     private final RateService rateService;
 
     public Route createRoute(Route route) {
-        validateCarrier(route.getCarrier().getId());
+        
         Route savedRoute = routeRepository.save(route);
 
         // 处理费率

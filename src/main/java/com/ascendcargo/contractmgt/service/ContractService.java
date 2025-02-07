@@ -13,15 +13,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ContractService {
     private final ContractRepository contractRepository;
-    private final OrganizationService organizationService;
     private final LaneService laneService;
 
     public Contract createContract(Contract contract) {
         validateContractDates(contract);
         validateContractReference(contract.getContractReference());
-        
-        // 确保关联组织存在
-        organizationService.getOrganization(contract.getOrganization().getId());
         
         Contract savedContract = contractRepository.save(contract);
         

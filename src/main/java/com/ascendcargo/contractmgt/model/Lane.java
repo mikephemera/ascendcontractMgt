@@ -35,9 +35,6 @@ public class Lane {
     @OneToMany(mappedBy = "lane", cascade = CascadeType.ALL)
     private Set<Route> routes = new HashSet<>();
 
-    @OneToMany(mappedBy = "lane", cascade = CascadeType.ALL)
-    private Set<LaneLocation> laneLocations = new HashSet<>();
-
     public enum FacilityType {
         TERMINAL, WAREHOUSE, PORT
     }
