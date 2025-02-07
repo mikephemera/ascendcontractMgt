@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ascendcargo.contractmgt.model.Contract;
 import com.ascendcargo.contractmgt.repository.ContractRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,9 +19,9 @@ public class ContractService {
     public Contract createContract(Contract contract) {
         validateContractDates(contract);
         validateContractReference(contract.getContractReference());
-        
+
         Contract savedContract = contractRepository.save(contract);
-        
+
         // 级联处理运输通道
         if (contract.getLanes() != null) {
             contract.getLanes().forEach(lane -> {
@@ -42,7 +43,7 @@ public class ContractService {
 
     @Transactional(readOnly = true)
     public Contract getContract(Long id) {
-        return contractRepository.findById(id)
+        return contractRepository.findByIdWithOrganization(id)
                 .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
     }
 
@@ -60,6 +61,12 @@ public class ContractService {
 
     public Contract findByContractReference(String contractRef) {
         return contractRepository.findByContractReference(contractRef)
-                .orElseThrow(() -> new EntityNotFoundException("Contract not found with reference: " + contractRef));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Contract not found with reference: " + contractRef));
+    }
+
+    public Contract updateContract(Long id, Contract contractDetails) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateContract'");
     }
 }

@@ -52,6 +52,13 @@ dependencies {
 	// Database auditing
 	implementation group: 'org.hibernate', name: 'hibernate-envers', version: '6.6.4.Final'  // Hibernate entity versioning
 
+	// JSON processing
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0'  // Jackson datatype for Java 8 date/time
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.16.1' // Jackson datatype for Hibernate 5
+	implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0' 			// Jakarta Persistence API
+    
+    // Remove any old javax.persistence dependencies
+
 	// File handling
 	implementation 'org.apache.poi:poi-ooxml:5.2.3'          // Excel file handling
 	implementation 'org.apache.commons:commons-csv:1.10.0'    // CSV file handling

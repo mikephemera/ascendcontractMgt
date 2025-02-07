@@ -20,7 +20,8 @@ public class ContractController {
 
     @PostMapping
     public ResponseEntity<Contract> createContract(@Valid @RequestBody Contract contract) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(contractService.createContract(contract));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(contractService.createContract(contract));
     }
 
     @PutMapping("/{id}/activate")
@@ -39,10 +40,8 @@ public class ContractController {
     }
 
     @PostMapping("/{contractId}/lanes")
-    public ResponseEntity<Lane> createLane(
-            @PathVariable Long contractId,
-            @Valid @RequestBody Lane lane
-    ) {
+    public ResponseEntity<Lane> createLane(@PathVariable Long contractId,
+            @Valid @RequestBody Lane lane) {
         Contract contract = contractService.getContract(contractId);
         lane.setContract(contract);
         return ResponseEntity.status(HttpStatus.CREATED).body(laneService.createLane(lane));
@@ -51,5 +50,12 @@ public class ContractController {
     @GetMapping("/{contractId}/lanes")
     public ResponseEntity<List<Lane>> getContractLanes(@PathVariable Long contractId) {
         return ResponseEntity.ok(laneService.getLanesByContractId(contractId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Contract> updateContract(@PathVariable Long id,
+            @Valid @RequestBody Contract contractDetails) {
+        Contract updatedContract = contractService.updateContract(id, contractDetails);
+        return ResponseEntity.ok(updatedContract);
     }
 }

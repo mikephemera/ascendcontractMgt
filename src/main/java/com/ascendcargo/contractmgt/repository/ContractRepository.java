@@ -10,15 +10,20 @@ import com.ascendcargo.contractmgt.model.Contract;
 import com.ascendcargo.contractmgt.model.Contract.ContractStatus;
 
 public interface ContractRepository extends JpaRepository<Contract, Long> {
-    Optional<Contract> findByContractReference(String contractReference);
 
-    List<Contract> findByStatus(Contract.ContractStatus status);
+        @Query("SELECT c FROM Contract c LEFT JOIN FETCH c.organization WHERE c.id = :id")
+        Optional<Contract> findByIdWithOrganization(@Param("id") Long id);
 
-    boolean existsByContractReference(String ref);
+        Optional<Contract> findByContractReference(String contractReference);
 
-    @Query("SELECT c FROM Contract c WHERE " + "(:status IS NULL OR c.status = :status) AND "
-            + "(:startDate IS NULL OR c.effectiveDate >= :startDate) AND "
-            + "(:endDate IS NULL OR c.expirationDate <= :endDate)")
-    List<Contract> searchContracts(@Param("status") ContractStatus status,
-            @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+        List<Contract> findByStatus(Contract.ContractStatus status);
+
+        boolean existsByContractReference(String ref);
+
+        @Query("SELECT c FROM Contract c WHERE " + "(:status IS NULL OR c.status = :status) AND "
+                        + "(:startDate IS NULL OR c.effectiveDate >= :startDate) AND "
+                        + "(:endDate IS NULL OR c.expirationDate <= :endDate)")
+        List<Contract> searchContracts(@Param("status") ContractStatus status,
+                        @Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate);
 }
